@@ -12,11 +12,22 @@
 # val: images/valid # val images (relative to 'path') 99 images
 # test: images/test # test images (relative to 'path') 34 images
 
-path: human_dataset # dataset root dir
+path: god_yolo # dataset root dir
 train: images/train # train images (relative to 'path') 780 images
-val: images/test # val images (relative to 'path') 99 images
+val: images/valid # val images (relative to 'path') 99 images
 test: images/valid  # test images (relative to 'path') 34 images
 
 # Classes
 names:
-  0: Hoan
+  0: Graphic
+  1: Natural
+  2: Variation
+  3: Figure
+  4: Logo
+  5: Geometry
+  6: TB_Full_lined
+  7: TB_Merged_cells
+  8: TB_Partial_lined
+  9: TB_Partial_line_MC
+  10: TB_No_lines
+
