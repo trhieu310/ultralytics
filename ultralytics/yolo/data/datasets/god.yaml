@@ -19,15 +19,15 @@ test: images/valid  # test images (relative to 'path') 34 images
 
 # Classes
 names:
-  1: Graphic
-  2: Natural
-  3: Variation
-  4: Figure
-  5: Logo
-  6: Geometry
-  7: TB_Full_lined
-  8: TB_Merged_cells
-  9: TB_Partial_lined
-  10: TB_Partial_line_MC
-  11: TB_No_lines
+  0: Graphic
+  1: Natural
+  2: Variation
+  3: Figure
+  4: Logo
+  5: Geometry
+  6: TB_Full_lined
+  7: TB_Merged_cells
+  8: TB_Partial_lined
+  9: TB_Partial_line_MC
+  10: TB_No_lines
 
