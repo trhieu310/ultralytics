@@ -1,8 +1,8 @@
-# Ultralytics YOLO 🚀, GPL-3.0 license
+# Ultralytics YOLO 🚀, AGPL-3.0 license
 # Default training settings and hyperparameters for medium-augmentation COCO training
 
-task: detect  # inference task, i.e. detect, segment, classify
-mode: train  # YOLO mode, i.e. train, val, predict, export
+task: detect  # (str) YOLO task, i.e. detect, segment, classify, pose
+mode: train  # (str) YOLO mode, i.e. train, val, predict, export, track, benchmark
 
 # Train settings -------------------------------------------------------------------------------------------------------
 model:  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
@@ -30,10 +30,10 @@ cos_lr: False  # use cosine learning rate scheduler
 close_mosaic: 10  # disable mosaic augmentation for final 10 epochs
 resume: False  # resume training from last checkpoint
 # Segmentation
-overlap_mask: True  # masks should overlap during training (segment train only)
-mask_ratio: 4  # mask downsample ratio (segment train only)
+overlap_mask: True  # (bool) masks should overlap during training (segment train only)
+mask_ratio: 4  # (int) mask downsample ratio (segment train only)
 # Classification
-dropout: 0.0  # use dropout regularization (classify train only)
+dropout: 0.0  # (float) use dropout regularization (classify train only)
 
 # Val/Test settings ----------------------------------------------------------------------------------------------------
 val: True  # validate/test during training
@@ -65,15 +65,15 @@ retina_masks: False  # use high-resolution segmentation masks
 boxes: True # Show boxes in segmentation predictions
 
 # Export settings ------------------------------------------------------------------------------------------------------
-format: torchscript  # format to export to
-keras: False  # use Keras
-optimize: False  # TorchScript: optimize for mobile
-int8: False  # CoreML/TF INT8 quantization
-dynamic: False  # ONNX/TF/TensorRT: dynamic axes
-simplify: False  # ONNX: simplify model
-opset:  # ONNX: opset version (optional)
-workspace: 4  # TensorRT: workspace size (GB)
-nms: False  # CoreML: add NMS
+format: torchscript  # (str) format to export to, choices at https://docs.ultralytics.com/modes/export/#export-formats
+keras: False  # (bool) use Kera=s
+optimize: False  # (bool) TorchScript: optimize for mobile
+int8: False  # (bool) CoreML/TF INT8 quantization
+dynamic: False  # (bool) ONNX/TF/TensorRT: dynamic axes
+simplify: False  # (bool) ONNX: simplify model
+opset:  # (int, optional) ONNX: opset version
+workspace: 4  # (int) TensorRT: workspace size (GB)
+nms: False  # (bool) CoreML: add NMS
 
 # Hyperparameters ------------------------------------------------------------------------------------------------------
 lr0: 0.01  # initial learning rate (i.e. SGD=1E-2, Adam=1E-3)
@@ -104,7 +104,10 @@ mixup: 0.0  # image mixup (probability)
 copy_paste: 0.0  # segment copy-paste (probability)
 
 # Custom config.yaml ---------------------------------------------------------------------------------------------------
-cfg:  # for overriding defaults.yaml
+cfg:  # (str, optional) for overriding defaults.yaml
 
 # Debug, do not modify -------------------------------------------------------------------------------------------------
-v5loader: False  # use legacy YOLOv5 dataloader
+v5loader: False  # (bool) use legacy YOLOv5 dataloader (deprecated)
+
+# Tracker settings ------------------------------------------------------------------------------------------------------
+tracker: botsort.yaml  # (str) tracker type, choices=[botsort.yaml, bytetrack.yaml]
