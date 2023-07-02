@@ -14,6 +14,7 @@ from ultralytics.yolo.utils.checks import check_requirements
 from ultralytics.yolo.utils.metrics import ConfusionMatrix, DetMetrics, box_iou
 from ultralytics.yolo.utils.plotting import output_to_target, plot_images
 from ultralytics.yolo.utils.torch_utils import de_parallel
+from .utils import coco_summarize
 
 
 class DetectionValidator(BaseValidator):
@@ -57,8 +58,7 @@ class DetectionValidator(BaseValidator):
         self.stats = []
 
     def get_desc(self):
-        """Return a formatted string summarizing class metrics of YOLO model."""
-        return ('%22s' + '%11s' * 6) % ('Class', 'Images', 'Instances', 'Box(P', 'R', 'mAP50', 'mAP50-95)')
+        return ('%22s' + '%11s' * 9) % ('Class', 'Images', 'Instances', 'Box(P', "R", "mAP50", "mAP75", "mAP85", "mAP95", "mAP50-95)") #"mAP75", "mAP85", "mAP95",
 
     def postprocess(self, preds):
         """Apply Non-maximum suppression to prediction outputs."""
@@ -73,9 +73,10 @@ class DetectionValidator(BaseValidator):
     def update_metrics(self, preds, batch):
         """Metrics."""
         for si, pred in enumerate(preds):
-            idx = batch['batch_idx'] == si
-            cls = batch['cls'][idx]
-            bbox = batch['bboxes'][idx]
+            idx = batch["batch_idx"] == si
+            cls = batch["cls"][idx]
+            cls[cls==7.] = 6. ### modify merge Tb_merge_Cell to TB_full_line
+            bbox = batch["bboxes"][idx]
             nl, npr = cls.shape[0], pred.shape[0]  # number of labels, predictions
             shape = batch['ori_shape'][si]
             correct_bboxes = torch.zeros(npr, self.niou, dtype=torch.bool, device=self.device)  # init
@@ -100,8 +101,9 @@ class DetectionValidator(BaseValidator):
                 height, width = batch['img'].shape[2:]
                 tbox = ops.xywh2xyxy(bbox) * torch.tensor(
                     (width, height, width, height), device=self.device)  # target boxes
-                ops.scale_boxes(batch['img'][si].shape[1:], tbox, shape,
-                                ratio_pad=batch['ratio_pad'][si])  # native-space labels
+                ops.scale_boxes(batch["img"][si].shape[1:], tbox, shape,
+                                ratio_pad=batch["ratio_pad"][si])  # native-space labels
+                
                 labelsn = torch.cat((cls, tbox), 1)  # native-space labels
                 correct_bboxes = self._process_batch(predn, labelsn)
                 # TODO: maybe remove these `self.` arguments as they already are member variable
@@ -244,10 +246,21 @@ class DetectionValidator(BaseValidator):
         image_id = int(stem) if stem.isnumeric() else stem
         box = ops.xyxy2xywh(predn[:, :4])  # xywh
         box[:, :2] -= box[:, 2:] / 2  # xy center to top-left corner
-        for p, b in zip(predn.tolist(), box.tolist()):
+        for p, b in zip(predn.tolist(), box.tolist()): 
+            # self.jdict.append({
+            #     'image_id': image_id,
+            #     'category_id': self.class_map[int(p[5])],
+            #     'bbox': [round(x, 3) for x in b],
+            #     'score': round(p[4], 5)})
+            
+            #### modify merge category_id 7 to 6
+            cls_idx = int(p[5])
+            if cls_idx == 7:
+                cls_idx = 6
+                
             self.jdict.append({
                 'image_id': image_id,
-                'category_id': self.class_map[int(p[5])],
+                'category_id': self.class_map[cls_idx],
                 'bbox': [round(x, 3) for x in b],
                 'score': round(p[4], 5)})
 
@@ -261,6 +274,7 @@ class DetectionValidator(BaseValidator):
                 check_requirements('pycocotools>=2.0.6')
                 from pycocotools.coco import COCO  # noqa
                 from pycocotools.cocoeval import COCOeval  # noqa
+                COCOeval.summarize = coco_summarize
 
                 for x in anno_json, pred_json:
                     assert x.is_file(), f'{x} file not found'
@@ -272,7 +286,11 @@ class DetectionValidator(BaseValidator):
                 eval.evaluate()
                 eval.accumulate()
                 eval.summarize()
-                stats[self.metrics.keys[-1]], stats[self.metrics.keys[-2]] = eval.stats[:2]  # update mAP50-95 and mAP50
+                stats[self.metrics.keys[-1]] = eval.stats[0]  # update mAP50-95
+                stats[self.metrics.keys[-2]] = eval.stats[1]  # update mAP95
+                stats[self.metrics.keys[-3]] = eval.stats[2]  # update mAP85
+                stats[self.metrics.keys[-4]] = eval.stats[3]  # update mAP75
+                stats[self.metrics.keys[-5]] = eval.stats[4]  # update mAP50
             except Exception as e:
                 LOGGER.warning(f'pycocotools unable to run: {e}')
         return stats

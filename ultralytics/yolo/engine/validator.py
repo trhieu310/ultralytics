@@ -23,6 +23,7 @@ import time
 from pathlib import Path
 
 import torch
+import time
 from tqdm import tqdm
 
 from ultralytics.nn.autobackend import AutoBackend
@@ -94,6 +95,7 @@ class BaseValidator:
         Supports validation of a pre-trained model if passed or a model being trained
         if trainer is passed (trainer gets priority).
         """
+        t0 = time.time()
         self.training = trainer is not None
         if self.training:
             self.device = trainer.device
@@ -185,8 +187,9 @@ class BaseValidator:
             results = {**stats, **trainer.label_loss_items(self.loss.cpu() / len(self.dataloader), prefix='val')}
             return {k: round(float(v), 5) for k, v in results.items()}  # return results as 5 decimal place floats
         else:
-            LOGGER.info('Speed: %.1fms preprocess, %.1fms inference, %.1fms loss, %.1fms postprocess per image' %
-                        tuple(self.speed.values()))
+            self.logger.info('Speed: %.1fms pre-process, %.1fms inference, %.1fms loss, %.1fms post-process per image' %
+                             self.speed)
+            self.logger.info(f'Done. ({time.time() - t0:.3f}s)')
             if self.args.save_json and self.jdict:
                 with open(str(self.save_dir / 'predictions.json'), 'w') as f:
                     LOGGER.info(f'Saving {f.name}...')

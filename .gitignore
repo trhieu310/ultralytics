@@ -136,7 +136,7 @@ notebooks/
 .pyre/
 
 # datasets and projects
-datasets/
+# datasets/
 runs/
 wandb/
 

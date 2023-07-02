@@ -33,6 +33,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 import torch
+import time
 
 from ultralytics.nn.autobackend import AutoBackend
 from ultralytics.yolo.cfg import get_cfg
@@ -210,7 +211,8 @@ class BasePredictor:
 
     @smart_inference_mode()
     def stream_inference(self, source=None, model=None):
-        """Streams real-time inference on camera feed and saves results to file."""
+        t0 = time.time()
+        self.run_callbacks("on_predict_start")
         if self.args.verbose:
             LOGGER.info('')
 
@@ -297,7 +299,8 @@ class BasePredictor:
             s = f"\n{nl} label{'s' * (nl > 1)} saved to {self.save_dir / 'labels'}" if self.args.save_txt else ''
             LOGGER.info(f"Results saved to {colorstr('bold', self.save_dir)}{s}")
 
-        self.run_callbacks('on_predict_end')
+        LOGGER.info(f'Done. ({time.time() - t0:.3f}s)')
+        self.run_callbacks("on_predict_end")
 
     def setup_model(self, model, verbose=True):
         """Initialize YOLO model with given parameters and set it to evaluation mode."""

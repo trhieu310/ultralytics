@@ -1,6 +1,7 @@
 # Ultralytics YOLO 🚀, AGPL-3.0 license
 
 import torch
+import time
 
 from ultralytics.yolo.engine.predictor import BasePredictor
 from ultralytics.yolo.engine.results import Results
@@ -43,6 +44,5 @@ def predict(cfg=DEFAULT_CFG, use_python=False):
         predictor = DetectionPredictor(overrides=args)
         predictor.predict_cli()
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     predict()
