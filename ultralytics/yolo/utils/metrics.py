@@ -428,6 +428,30 @@ class Metric:
         return self.all_ap[:, 0] if len(self.all_ap) else []
 
     @property
+    def ap75(self):
+        """AP@0.75 of all classes.
+        Return:
+            (nc, ) or [].
+        """
+        return self.all_ap[:, 5] if len(self.all_ap) else []
+
+    @property
+    def ap85(self):
+        """AP@0.85 of all classes.
+        Return:
+            (nc, ) or [].
+        """
+        return self.all_ap[:, 7] if len(self.all_ap) else []
+
+    @property
+    def ap95(self):
+        """AP@0.95 of all classes.
+        Return:
+            (nc, ) or [].
+        """
+        return self.all_ap[:, 9] if len(self.all_ap) else []
+
+    @property
     def ap(self):
         """AP@0.5:0.95
         Return:
@@ -460,6 +484,30 @@ class Metric:
         return self.all_ap[:, 0].mean() if len(self.all_ap) else 0.0
 
     @property
+    def map75(self):
+        """Mean AP@0.75 of all classes.
+        Return:
+            float.
+        """
+        return self.all_ap[:, 5].mean() if len(self.all_ap) else 0.0
+
+    @property
+    def map85(self):
+        """Mean AP@0.85 of all classes.
+        Return:
+            float.
+        """
+        return self.all_ap[:, 7].mean() if len(self.all_ap) else 0.0
+
+    @property
+    def map95(self):
+        """Mean AP@0.95 of all classes.
+        Return:
+            float.
+        """
+        return self.all_ap[:, 9].mean() if len(self.all_ap) else 0.0
+
+    @property
     def map(self):
         """Mean AP@0.5:0.95 of all classes.
         Return:
@@ -468,12 +516,12 @@ class Metric:
         return self.all_ap.mean() if len(self.all_ap) else 0.0
 
     def mean_results(self):
-        """Mean of results, return mp, mr, map50, map"""
-        return [self.mp, self.mr, self.map50, self.map]
+        """Mean of results, return mp, mr, map50, map75, map85, map95, map"""
+        return [self.mp, self.mr, self.map50, self.map75, self.map85, self.map95, self.map]
 
     def class_result(self, i):
-        """class-aware result, return p[i], r[i], ap50[i], ap[i]"""
-        return self.p[i], self.r[i], self.ap50[i], self.ap[i]
+        """class-aware result, return p[i], r[i], ap50[i], ap75[i], ap85[i], ap95[i], ap[i]"""
+        return self.p[i], self.r[i], self.ap50[i], self.ap75[i], self.ap85[i], self.ap95[i], self.ap[i]
 
     def get_maps(self, nc):
         maps = np.zeros(nc) + self.map
@@ -483,7 +531,7 @@ class Metric:
 
     def fitness(self):
         # Model fitness as a weighted combination of metrics
-        w = [0.0, 0.0, 0.1, 0.9]  # weights for [P, R, mAP@0.5, mAP@0.5:0.95]
+        w = [0.0, 0.0, 0.1, 0.1, 0.1, 0.1, 0.9]  # weights for [P, R, mAP@0.5, mAP@0.75, mAP@0.85, mAP@0.95, mAP@0.5:0.95]
         return (np.array(self.mean_results()) * w).sum()
 
     def update(self, results):
@@ -509,7 +557,7 @@ class DetMetrics:
 
     @property
     def keys(self):
-        return ["metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP50-95(B)"]
+        return ["metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP75(B)", "metrics/mAP85(B)", "metrics/mAP95(B)", "metrics/mAP50-95(B)"]
 
     def mean_results(self):
         return self.metric.mean_results()
@@ -565,8 +613,8 @@ class SegmentMetrics:
     @property
     def keys(self):
         return [
-            "metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP50-95(B)",
-            "metrics/precision(M)", "metrics/recall(M)", "metrics/mAP50(M)", "metrics/mAP50-95(M)"]
+            "metrics/precision(B)", "metrics/recall(B)", "metrics/mAP50(B)", "metrics/mAP75(B)", "metrics/mAP85(B)", "metrics/mAP95(B)", "metrics/mAP50-95(B)",
+            "metrics/precision(M)", "metrics/recall(M)", "metrics/mAP50(M)", "metrics/mAP75(M)", "metrics/mAP85(M)", "metrics/mAP95(M)", "metrics/mAP50-95(M)"]
 
     def mean_results(self):
         return self.metric_box.mean_results() + self.metric_mask.mean_results()

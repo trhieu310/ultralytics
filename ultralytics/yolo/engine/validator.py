@@ -5,6 +5,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import torch
+import time
 from tqdm import tqdm
 
 from ultralytics.nn.autobackend import AutoBackend
@@ -78,6 +79,7 @@ class BaseValidator:
         Supports validation of a pre-trained model if passed or a model being trained
         if trainer is passed (trainer gets priority).
         """
+        t0 = time.time()
         self.training = trainer is not None
         if self.training:
             self.device = trainer.device
@@ -170,6 +172,7 @@ class BaseValidator:
         else:
             self.logger.info('Speed: %.1fms pre-process, %.1fms inference, %.1fms loss, %.1fms post-process per image' %
                              self.speed)
+            self.logger.info(f'Done. ({time.time() - t0:.3f}s)')
             if self.args.save_json and self.jdict:
                 with open(str(self.save_dir / "predictions.json"), 'w') as f:
                     self.logger.info(f"Saving {f.name}...")

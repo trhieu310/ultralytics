@@ -12,9 +12,9 @@
 # val: images/valid # val images (relative to 'path') 99 images
 # test: images/test # test images (relative to 'path') 34 images
 
-path: god_yolo # dataset root dir
+path: god_yolo_test # dataset root dir #god_yolo
 train: images/train # train images (relative to 'path') 780 images
-val: images/valid # val images (relative to 'path') 99 images
+val: images/test # val images (relative to 'path') 99 images
 test: images/valid  # test images (relative to 'path') 34 images
 
 # Classes
@@ -30,4 +30,5 @@ names:
   8: TB_Partial_lined
   9: TB_Partial_line_MC
   10: TB_No_lines
+  11: Chem_Formula
 
