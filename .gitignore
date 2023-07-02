@@ -125,11 +125,14 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+#notebooks
+notebooks/
+
 # Pyre type checker
 .pyre/
 
 # datasets and projects
-datasets/
+# datasets/
 runs/
 wandb/
 

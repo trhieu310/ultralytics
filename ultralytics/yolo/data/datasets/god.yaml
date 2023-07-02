@@ -1,0 +1,34 @@
+# Ultralytics YOLO 🚀, GPL-3.0 license
+# COCO 2017 dataset http://cocodataset.org by Microsoft
+# Example usage: python train.py --data coco.yaml
+# parent
+# ├── yolov5
+# └── datasets
+#     └── coco  ← downloads here (20.1 GB)
+
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+# path: ../../input/human-dataset # dataset root dir
+# train: images/train # train images (relative to 'path') 780 images
+# val: images/valid # val images (relative to 'path') 99 images
+# test: images/test # test images (relative to 'path') 34 images
+
+path: god_yolo_test # dataset root dir #god_yolo
+train: images/train # train images (relative to 'path') 780 images
+val: images/test # val images (relative to 'path') 99 images
+test: images/valid  # test images (relative to 'path') 34 images
+
+# Classes
+names:
+  0: Graphic
+  1: Natural
+  2: Variation
+  3: Figure
+  4: Logo
+  5: Geometry
+  6: TB_Full_lined
+  7: TB_Merged_cells
+  8: TB_Partial_lined
+  9: TB_Partial_line_MC
+  10: TB_No_lines
+  11: Chem_Formula
+

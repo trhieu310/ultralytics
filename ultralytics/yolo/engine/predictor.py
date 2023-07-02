@@ -31,6 +31,7 @@ from pathlib import Path
 
 import cv2
 import torch
+import time
 
 from ultralytics.nn.autobackend import AutoBackend
 from ultralytics.yolo.cfg import get_cfg
@@ -134,6 +135,7 @@ class BasePredictor:
         self.vid_path, self.vid_writer = [None] * self.dataset.bs, [None] * self.dataset.bs
 
     def stream_inference(self, source=None, model=None):
+        t0 = time.time()
         self.run_callbacks("on_predict_start")
         if self.args.verbose:
             LOGGER.info("")
@@ -200,6 +202,7 @@ class BasePredictor:
             s = f"\n{nl} label{'s' * (nl > 1)} saved to {self.save_dir / 'labels'}" if self.args.save_txt else ''
             LOGGER.info(f"Results saved to {colorstr('bold', self.save_dir)}{s}")
 
+        LOGGER.info(f'Done. ({time.time() - t0:.3f}s)')
         self.run_callbacks("on_predict_end")
 
     def setup_model(self, model):
